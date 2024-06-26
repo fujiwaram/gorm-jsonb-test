@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=passw0rd
+    command: postgres -c log_destination=stderr -c log_statement=all -c log_connections=on -c log_disconnections=on
+    logging:
+      options:
+        max-size: "10k"
+        max-file: "5"
+  app:
+    image: gorm-jsonb-test
+    container_name: gorm-jsonb-test
+    build: .
+    volumes:
+      - .:/app
+    depends_on:
+      - db
